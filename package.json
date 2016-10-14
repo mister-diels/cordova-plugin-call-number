@@ -1,5 +1,5 @@
 {
-  "name": "call-number",
+  "name": "cordova-plugin-call-number",
   "version": "1.0.1",
   "description": "Call Number from Cordova Application",
   "cordova": {
