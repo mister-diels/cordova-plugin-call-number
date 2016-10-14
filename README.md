@@ -3,16 +3,8 @@ CordovaCallNumberPlugin
 
 Call a number directly from your cordova application.
 
-Install the plugin using:
-
-``` java
-cordova plugin add https://github.com/Rohfosho/CordovaCallNumberPlugin.git
 ```
-
-or
-
-``` java
-npm install call-number
+cordova plugin add cordova-plugin-call-number
 ```
 
 Use the plugin in your JS file:
