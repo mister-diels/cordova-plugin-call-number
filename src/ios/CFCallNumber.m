@@ -5,9 +5,9 @@
 
 - (void) callNumber:(CDVInvokedUrlCommand*)command {
 
+    __block CDVPluginResult* pluginResult = nil;
     [self.commandDelegate runInBackground:^{
 
-        CDVPluginResult* pluginResult = nil;
         NSString* number = [command.arguments objectAtIndex:0];
         number = [number stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
@@ -22,12 +22,10 @@
             NSURL *url = [NSURL URLWithString:number];
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
                if (!success) {
-                   NSLog(@"Failed to open URL: %@", url);
                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
                } else {
                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                }
-               [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
            }];
         }
 
