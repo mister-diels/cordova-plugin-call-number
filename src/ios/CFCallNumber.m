@@ -9,29 +9,25 @@
 
         CDVPluginResult* pluginResult = nil;
         NSString* number = [command.arguments objectAtIndex:0];
-        number = [number stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        number = [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-        if (![number hasPrefix:@"tel:"]) {
-            number = [NSString stringWithFormat:@"tel:%@", number];
+        if( ! [number hasPrefix:@"tel:"]){
+            number =  [NSString stringWithFormat:@"tel:%@", number];
         }
 
-        NSURL *url = [NSURL URLWithString:number];
-        if (![[UIApplication sharedApplication] canOpenURL:url]) {
+        if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:number]]) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NoFeatureCallSupported"];
-        } else {
-            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
-                if (success) {
-                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-                } else {
-                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
-                }
-                // return result
-                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-            }];
-            return; // Avoid sending the plugin result twice
+        }
+        else {
+            NSURL *url = [NSURL URLWithString:number];
+            if (![[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil]) {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
         }
 
-        // return result for unsupported URLs
+        // return result
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 
     }];
