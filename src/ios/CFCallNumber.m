@@ -9,7 +9,7 @@
 
         CDVPluginResult* pluginResult = nil;
         NSString* number = [command.arguments objectAtIndex:0];
-        number = [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        number = [number stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
         if( ! [number hasPrefix:@"tel:"]){
             number =  [NSString stringWithFormat:@"tel:%@", number];
@@ -20,11 +20,15 @@
         }
         else {
             NSURL *url = [NSURL URLWithString:number];
-            if (![[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil]) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
-            } else {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            }
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+               if (!success) {
+                   NSLog(@"Failed to open URL: %@", url);
+                   pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
+               } else {
+                   pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+               }
+               [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+           }];
         }
 
         // return result
