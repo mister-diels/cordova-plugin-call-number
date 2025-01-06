@@ -28,3 +28,8 @@ function onError(result) {
   console.log("Error:"+result);
 }
 ```
+
+### Version 1.0.2
+
+#### iOS
+Updated the deprecated methode UIApplication.openURL(_:) by UIApplication.open(_:options:completionHandler:)
